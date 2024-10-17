@@ -1,91 +1,104 @@
 # AtividadeFase2_Cap1_FIAP
 
-### Cenário de Utilização
-Este código propõe um modelo de solução para uma aplicação em Python voltada para a **Gestão de Qualidade de Sementes** no setor agrícola. O sistema foi desenvolvido para monitorar e controlar a qualidade dos lotes de sementes, oferecendo uma interface interativa para gerenciar os dados e gerar relatórios detalhados.
-Através deste sistema, o agricultor ou gerente de produção poderá monitorar, cadastrar, atualizar e excluir lotes de sementes, além de gerar relatórios que garantem que os lotes atendam aos padrões de qualidade necessários para uma produção eficiente e sustentável.
+## Introdução
 
-### Funcionalidades do Sistema:
-O software oferece uma interação completa com um banco de dados, onde os dados dos lotes de sementes são armazenados e geridos. As funcionalidades incluem:
+Este projeto descreve a modelagem de um banco de dados para um sistema de monitoramento agrícola. O objetivo do sistema é coletar dados de sensores instalados na plantação e ajustá-los de acordo com a necessidade de água e nutrientes. Os sensores monitoram umidade, pH e nutrientes do solo. Com base nas leituras dos sensores, são feitas recomendações de ajustes para otimizar o uso dos recursos. O sistema também gera relatórios com base nesses dados para prever futuras necessidades.
 
-- **Cadastro de novos lotes**: Adiciona novos lotes de sementes ao banco de dados.
-- **Atualização de lotes**: Permite modificar as informações de lotes já existentes.
-- **Exclusão de lotes**: Remove lotes do banco de dados.
-- **Geração de relatórios**: Cria relatórios detalhados dos lotes em formato .txt, que são apresentados ao usuário.
-- **Consulta de lotes**: Exibe todos os lotes registrados no banco de dados.
-- **Limpeza do banco de dados**: Exclui todos os lotes de sementes registrados.
-- 
-O sistema armazena e processa as seguintes informações de cada lote de sementes:
+## Entidades e Relacionamentos
 
-- **Número do Lote (Código alfanumérico)**: Usado para rastreabilidade.
-- **Data da Colheita (dd/mm/aaaa)**: Para controle de tempo de estocagem.
-- **Pureza (%)**: Porcentagem de sementes puras, excluindo impurezas e outras espécies.
-- **Taxa de Germinação (%)**: Sementes que germinaram com sucesso em relação ao número total de sementes testadas.
-- **Viabilidade (%)**: Percentual de sementes ainda capazes de germinar após um determinado período.
-- **Teor de Umidade (%)**: Quantidade de água presente nas sementes.
-- **Sanidade (%)**: Presença ou ausência de patógenos, ou contagem de colônias por grama de semente.
-- **Peso de Mil Sementes (g)**: Referência para o tamanho e qualidade do lote.
+### 1. SENSORES
 
-### Padrões de Qualidade Adotados:
-- **Pureza**: 98.0%
-- **Taxa de Germinação**: 90.0%
-- **Viabilidade**: 85.0%
-- **Teor de Umidade**: 10.0%
-- **Sanidade**: Máximo de 0.5%
-- **Peso de Mil Sementes**: 500g, com tolerância de ±5%
+A entidade `SENSORES` representa os dispositivos físicos instalados na plantação, responsáveis por coletar dados em tempo real.
 
-# Funcionamento do Código
-* O código está separado em menus interativos que permitem ao usuário realizar o cadastro, consulta, atualização e exclusão de lotes de sementes, além de gerar relatórios e exibir dados.
-* A navegação no menu é feita por meio da entrada de um número inteiro, que representa a escolha da opção desejada pelo usuário.
-* O gerenciamento dos dados de sementes é realizado por funções que lidam com listas e dicionários provenientes do banco de dados, facilitando a manipulação e atualização dos lotes.
-* O sistema está modularizado e comentado.
+- **Atributos**:
+  - `ID_sensor`: Identificador único de cada sensor (Chave primária).
+  - `tipo_sensor`: O tipo de sensor (umidade, pH, nutrientes).
+  - `localizacao_sensor`: A localização geográfica onde o sensor está instalado.
+  - `data_instalacao`: A data em que o sensor foi instalado.
 
-### Bibliotecas para instalação
-* oracledb -> utilizado para realizar os comandos com o bando de dados
-* pandas -> utilizado para melhorar a apresentação dos dados no terminal 
-* os -> responsável por realizar as limpezas no terminal do promp de comando
+- **Relacionamento**: 
+  - Se relaciona com a entidade `LEITURA_SENSOR`(1:N).
 
-### Fluxograma do funcionamento
+### 2. LEITURA_SENSOR
 
-Inicializa o processo de conexão com o banco de dados. Se a conexão for bem sucedida, procede com o fluxo do software, caso contrario informa a mensagem de erro e finaliza o programa
+A entidade `LEITURA_SENSOR` armazena os dados coletados pelos sensores em intervalos regulares.
 
-Início – O programa inicia com uma mensagem de saudação e introdução.
+- **Atributos**:
+  - `ID_leitura`: Identificador único da leitura (Chave primária).
+  - `ID_sensor`: Referência ao sensor que coletou a leitura (Chave estrangeira de `SENSORES`).
+  - `valor_leitura`: O valor registrado pela leitura (umidade, pH, nutrientes).
+  - `hora_leitura`: A hora em que a leitura foi feita.
+  - `data_leitura`: A data em que a leitura foi feita.
 
-Menu Inicial – O usuário escolhe uma das seguintes opções:
+- **Relacionamento**: 
+  - Relaciona-se com `SENSORES` (N:1)
 
-- Inserir novo lote;
-- Atualizar lote existente;
-- Excluir lote;
-- Gerar relatório de qualidade;
-- Exibir lotes registrados;
-- Excluir todos os lotes;
-- Sair do programa.
+### 3. CULTURAS
 
-Verificar opção escolhida – O software valida a escolha. Se a entrada for inválida, solicita uma nova.
+A entidade `CULTURAS` define os diferentes tipos de plantas cultivadas e seus respectivos requisitos de água e nutrientes.
 
-Inserir novo lote (Opção 1)
-- Solicita informações do lote (número, data, pureza, umidade, etc.).
-- Armazena o lote no sistema.
+- **Atributos**:
+  - `ID_culturas`: Identificador único da cultura (Chave primária).
+  - `tipo_planta`: O tipo da planta cultivada.
+  - `tipo_solo`: O tipo de solo onde a cultura está plantada.
+  - `qtd_agua_mensal`: Quantidade ideal de água mensal para essa cultura.
+  - `ph_ideal`: Valor de pH ideal para o solo dessa cultura.
+  - `qtd_fosforo_mensal`: Quantidade ideal de fósforo mensal para a cultura.
+  - `qtd_potassio_mensal`: Quantidade ideal de potássio mensal.
+  - `qtd_npk_mensal`: Quantidade ideal de nutrientes NPK mensal.
 
-Atualizar lote (Opção 2)
-- Solicita o número do lote para atualizar.
-- Realiza a procura do lote selecionado informando sua existencia ou não
-- Permite a atualização dos dados do lote selecionado.
+- **Relacionamento**: 
+  - Relaciona-se com `PLANTACAO` (1:N)
+  - Relaciona-se com `AJUSTES` (1:N)
+  - Relaciona-se com `RELATORIO` para gerar relatórios baseados nos ajustes feitos em cada plantação.
 
-Excluir lote (Opção 3)
-- Solicita o número do lote a ser excluído.
-- Realiza a procura do lote selecionado informando sua existencia ou não
-- Remove o lote do sistema.
+### 4. AJUSTES
 
-Gerar relatório (Opção 4)
-- Gera um relatório de qualidade do lote selecionado.
-- Realiza a procura do lote selecionado informando sua existencia ou não
-- Exibe o relatório no terminal e gera um arquivo txt para o usuário com as informações.
+A entidade `AJUSTES` armazena as modificações recomendadas no sistema de irrigação e aplicação de nutrientes com base nas leituras dos sensores.
 
-Exibir lotes registrados (Opção 5)
-- Exibe todos os lotes registrados no sistema.
+- **Atributos**:
+  - `ID_ajuste`: Identificador único do ajuste (Chave primária).
+  - `ID_plantacao`: Referência à plantação onde o ajuste foi aplicado (Chave estrangeira de `PLANTACAO`).
+  - `ID_culturas`: Referência à cultura ajustada (Chave estrangeira de `CULTURAS`).
+  - `ID_leitura`: Referência à leitura do sensor que motivou o ajuste (Chave estrangeira de `LEITURA_SENSOR`).
+  - `data_ajuste`: A data do ajuste.
+  - `hora_ajuste`: A hora do ajuste.
+  - `agua_ajuste`: Quantidade de água recomendada para aplicação.
+  - `ph_ajuste`: Ajuste de pH recomendado.
+  - `fosforo_ajuste`: Quantidade de fósforo recomendada.
+  - `potassio_ajuste`: Quantidade de potássio recomendada.
+  - `npk_ajuste`: Quantidade de NPK recomendada.
 
-Excluir todos os lotes (Opção 6)
-- Remove todos os lotes registrados no sistema.
+- **Relacionamento**:
+  - Relaciona-se com `LEITURA_SENSOR` (N:1)
+  - Relaciona-se com `CULTURAS` (N:1)`PLANTACAO` (N:1) para definir qual plantação e cultura foram ajustadas.
 
-Sair do programa (Opção 7)
-- Encerra o programa com uma mensagem de despedida.
+### 5. PLANTACAO
+
+A entidade `PLANTACAO` armazena informações sobre as plantações e os dados de consumo de água e nutrientes.
+
+- **Atributos**:
+  - `ID_plantacao`: Identificador único da plantação (Chave primária).
+  - `ID_culturas`: Referência à cultura que está sendo plantada (Chave estrangeira de `CULTURAS`).
+  - `agua_consumida`: Quantidade de água consumida pela plantação.
+  - `ph_atual`: Valor atual do pH do solo.
+  - `fosforo_consumido`: Quantidade de fósforo consumida.
+  - `potassio_consumido`: Quantidade de potássio consumida.
+  - `npk_consumido`: Quantidade de NPK consumida.
+
+- **Relacionamento**:
+  - Relaciona-se com `CULTURAS` (N:1)
+  - Relaciona-se com `AJUSTES` para vincular ajustes às plantações específicas.
+
+### 6. RELATORIO
+
+A entidade `RELATORIO` armazena os relatórios gerados com base nos ajustes e nas condições da plantação ao longo do tempo.
+
+- **Atributos**:
+  - `ID_relatorio`: Identificador único do relatório (Chave primária).
+  - `ID_culturas`: Referência à cultura incluída no relatório (Chave estrangeira de `CULTURAS`).
+  - `ID_plantacao`: Referência à plantação incluída no relatório (Chave estrangeira de `PLANTACAO`).
+  - `ID_ajuste`: Referência ao ajuste que foi realizado (Chave estrangeira de `AJUSTES`).
+
+- **Relacionamento**:
+  - Relaciona-se com `AJUSTES`, `PLANTACAO`, e `CULTURAS` para coletar dados necessários para gerar os relatórios.
